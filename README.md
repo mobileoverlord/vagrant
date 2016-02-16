@@ -45,10 +45,19 @@ Vagrant.status
 %Vagrant.Message.Status{state_long: "running", state: :running, provider: "virtualbox"}
 ```
 
-### Commands
+### Currently Supported Commands
 ```elixir
-Vagrant.up
-Vagrant.halt
+[:destroy, :halt, :up, :reload, :status, :provision, :suspend, :resume, :ssh]
+```
+Any of these commands can be called on the `Vagrant` module
+```elixir
 Vagrant.reload
-Vagrant.status
+```
+
+Certain commands require a more extensive interface, like SSH. You can initiate single ssh commands are wait for the results
+```elixir
+Vagrant.ssh flags: ["-c", "whoami"]
+{:ok, "vagrant"}
+# Or Use the Ssh Api
+Vagrant.Ssh.cmd("whoami")
 ```
