@@ -17,4 +17,5 @@ defmodule Vagrant.Message do
   def parse(_, {:error, result}) do
     {:error, MachineReadable.load(result)}
   end
+
 end

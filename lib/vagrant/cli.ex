@@ -1,17 +1,22 @@
 defmodule Vagrant.Cli do
   alias Vagrant.Message
 
-  def up(opts \\ []),
-    do: vagrant("up", opts)
+  defmacro __using__(_) do
+    quote do
+      import unquote(__MODULE__)
+      @before_compile unquote(__MODULE__)
+    end
+  end
 
-  def halt(opts \\ []),
-    do: vagrant("halt", opts)
-
-  def reload(opts \\ []),
-    do: vagrant("reload", opts)
-
-  def status(opts \\ []),
-    do: vagrant("status", opts)
+  defmacro __before_compile__(_env) do
+    for cmd <- [:destroy, :halt, :up, :reload, :status, :provision, :suspend, :resume] do
+      quote do
+        def unquote(cmd)(opts \\ []) do
+          vagrant(Atom.to_string(unquote(cmd)), opts)
+        end
+      end
+    end
+  end
 
   def vagrant(cmd, opts \\ []) do
     opts = opts

@@ -1,15 +1,27 @@
 defmodule Vagrant do
-  alias Vagrant.Cli
+  use Vagrant.Cli
 
-  defdelegate up, to: Cli
-  defdelegate up(opts), to: Cli
+  def installed? do
+    try do
+      System.cmd("vagrant", ["--version"])
+      true
+    rescue
+      _e -> false
+    end
+  end
 
-  defdelegate halt, to: Cli
-  defdelegate halt(opts), to: Cli
-
-  defdelegate reload, to: Cli
-  defdelegate reload(opts), to: Cli
-
-  defdelegate status, to: Cli
-  defdelegate status(opts), to: Cli
+  def version do
+    try do
+      case System.cmd("vagrant", ["--version"]) do
+        {result, 0} ->
+          String.strip(result)
+          |> String.split(" ")
+          |> List.last
+        _ ->
+          Vagrant.Error.not_installed
+      end
+    rescue
+      _e -> Vagrant.Error.not_installed
+    end
+  end
 end
