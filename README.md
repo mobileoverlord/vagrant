@@ -61,3 +61,11 @@ Vagrant.ssh flags: ["-c", "whoami"]
 # Or Use the Ssh Api
 Vagrant.Ssh.cmd("whoami")
 ```
+
+You can also get information about vagrant itself
+```elixir
+Vagrant.installed?
+true
+Vagrant.version
+"1.7.4"
+```
