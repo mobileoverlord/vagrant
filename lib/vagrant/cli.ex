@@ -9,16 +9,31 @@ defmodule Vagrant.Cli do
   end
 
   defmacro __before_compile__(_env) do
-    for cmd <- [:destroy, :halt, :up, :reload, :status, :provision, :suspend, :resume] do
+    for cmd <- [:destroy, :halt, :up, :reload, :status, :provision, :suspend, :resume, :ssh] do
       quote do
         def unquote(cmd)(opts \\ []) do
-          vagrant(Atom.to_string(unquote(cmd)), opts)
+          execute(Atom.to_string(unquote(cmd)), opts)
         end
       end
     end
   end
 
-  def vagrant(cmd, opts \\ []) do
+  def vagrant(_, _ \\ [])
+  def vagrant("ssh", opts) do
+    flags = opts[:flags] || []
+    command =
+      Enum.find(flags, fn(flag) ->
+        String.starts_with?(flag, "-c") or
+        String.starts_with?(flag, "--command")
+      end)
+    if command != nil do
+      execute("ssh", opts)
+    end
+  end
+
+  def vagrant(cmd, opts), do: execute(cmd, opts)
+
+  def execute(cmd, opts) do
     opts = opts
     |> Enum.into(%{})
 
